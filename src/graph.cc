@@ -446,6 +446,7 @@ int64_t Graph::onnx_ir_version(void)
 #include "nodes/slice.h"
 #include "nodes/squeeze.h"
 #include "nodes/softmax.h"
+#include "nodes/split.h"
 #include "nodes/transpose.h"
 #include "nodes/unsqueeze.h"
 #include "nodes/upsample.h"
@@ -545,6 +546,8 @@ Node* Graph::createNode(std::string opName)
 	if( opName == "Unsqueeze" )return new Unsqueeze;
 	if( opName == "Upsample" )return new Upsample;
 	if( opName == "Xor" )return new Elementwise_2("Xor");
+	if( opName == "Split" )return new Split;
+
 
 	ERROR("Unimplemented: node operation " << opName);
 	return NULL;

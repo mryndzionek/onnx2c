@@ -15,6 +15,7 @@ class Split : public Node {
 	}
 
 	int64_t axis = 0;
+	Tensor *split = NULL; 
 
 	virtual void parseAttributes( onnx::NodeProto &node ) override
 	{
@@ -29,8 +30,7 @@ class Split : public Node {
 	virtual void print(std::ostream &dst) const override
 	{
 		const Tensor *input = get_input_tensor(0);
-		const Tensor *split = get_input_tensor(1);
-		int64_t num_outputs = split->data_dim[0];
+		int64_t num_outputs = 3;
 		int64_t num_dims = input->data_dim.size();
 		auto io_type_str = input->data_type_str();
 
@@ -56,6 +56,17 @@ class Split : public Node {
 		dst << "};" << std::endl;
 		dst << "\tsize_t idx[" << std::to_string(num_dims) << "];" << std::endl
 			<< std::endl;
+
+		dst << "\tconst " << split->data_type_str() << " split[" << split->data_num_elem() << "] = {";
+		for (int i = 0; i < split->data_num_elem(); i++)
+		{
+			dst << split->get_data_element(i);
+			if(i < split->data_num_elem() - 1)
+			{
+				dst << ", ";
+			}
+		}
+		dst << "};" << std::endl;
 
 		dst << "\tfor (size_t i = 0; i < (";
 		for (int64_t i = 0; i < num_dims; i++)
@@ -132,12 +143,19 @@ class Split : public Node {
 		auto split_sum = 0;
 
 		const Tensor *input = get_input_tensor(0);
-		const Tensor *split = get_input_tensor(1);
+		split = new Tensor();
+		split->data_type = onnx::TensorProto_DataType_INT64;
 		name_input(0, "input");
-		name_input(1, "split");
 
 		// TODO in v18 'num_outputs' is an attribute
-		int64_t num_outputs = split->data_dim[0];
+		int64_t num_outputs = 3;
+		split->data_dim.push_back(3);
+		split->data_buffer = calloc(split->data_num_elem(), split->data_elem_size());
+
+		for (int i = 0; i < num_outputs; i++)
+		{
+			((int64_t*)split->data_buffer)[i] = 2;
+		}
 
 		for (int i = 0; i < split->data_num_elem(); i++)
 		{

@@ -721,6 +721,8 @@ ONNX_backend_node_test(softplus_example)
 ONNX_backend_node_test(softsign)
 ONNX_backend_node_test(softsign_example)
 
+ONNX_backend_node_test(split_equal_parts_1d)
+
 ONNX_backend_node_test(sqrt)
 ONNX_backend_node_test(sqrt_example)
 

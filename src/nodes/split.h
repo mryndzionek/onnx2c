@@ -16,6 +16,7 @@ class Split : public Node {
 
 	int64_t axis = 0;
 	Tensor *split = NULL; 
+	int64_t num_outputs = 0;
 
 	virtual void parseAttributes( onnx::NodeProto &node ) override
 	{
@@ -30,7 +31,6 @@ class Split : public Node {
 	virtual void print(std::ostream &dst) const override
 	{
 		const Tensor *input = get_input_tensor(0);
-		int64_t num_outputs = 3;
 		int64_t num_dims = input->data_dim.size();
 		auto io_type_str = input->data_type_str();
 
@@ -148,13 +148,13 @@ class Split : public Node {
 		name_input(0, "input");
 
 		// TODO in v18 'num_outputs' is an attribute
-		int64_t num_outputs = 3;
-		split->data_dim.push_back(3);
+		num_outputs = 2;
+		split->data_dim.push_back(2);
 		split->data_buffer = calloc(split->data_num_elem(), split->data_elem_size());
 
 		for (int i = 0; i < num_outputs; i++)
 		{
-			((int64_t*)split->data_buffer)[i] = 2;
+			((int64_t*)split->data_buffer)[i] = 3;
 		}
 
 		for (int i = 0; i < split->data_num_elem(); i++)
